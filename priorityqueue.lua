@@ -129,6 +129,25 @@ local function peek(self)
     local first = tree:first()
     return first:get_queue():peek(), first:get_priority()
 end
+
+local function piterator(self, priority)
+    if (priority == nil) then
+        error("`priority' cannot be nil.", 2)
+    end
+    return coroutine.wrap(
+        function()
+            local tree = self._t
+            local n = node.new(priority)
+            local found, element = tree:find(n)
+            if (found) then
+                local q = element:get_queue()
+                for j, value in q:iterate() do
+                    coroutine.yield(j, value, priority)
+                end
+            end
+        end
+    )
+end
 -- end of priority queue
 
 -- default comparer for nodes
@@ -169,12 +188,13 @@ local function create(comparer)
         version = version,
 
         -- methods
-        clear    = function(self) clear(data) end,
-        dequeue  = function(self) return dequeue(data) end,
-        empty    = function(self) return empty(data) end,
-        enqueue  = function(self, value, priority) enqueue(data, value, priority) end,
-        iterator = function(self) return iterator(data) end,
-        peek     = function(self) return peek(data) end
+        clear     = function(self) clear(data) end,
+        dequeue   = function(self) return dequeue(data) end,
+        empty     = function(self) return empty(data) end,
+        enqueue   = function(self, value, priority) enqueue(data, value, priority) end,
+        iterator  = function(self) return iterator(data) end,
+        peek      = function(self) return peek(data) end,
+        piterator = function(self, priority) return piterator(data, priority) end
     }
 
     return setmetatable({}, {

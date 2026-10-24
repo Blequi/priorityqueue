@@ -238,8 +238,8 @@ describe("priorityqueue module", function()
 
                 for i, v, p in pq:iterator() do
                     local item = correct_order[i]
-                    assert.are.equals(v, item.d)
-                    assert.are.equals(p, item.p)
+                    assert.are.equals(item.d, v)
+                    assert.are.equals(item.p, p)
                 end
             end)
         end)
@@ -281,8 +281,8 @@ describe("priorityqueue module", function()
 
             for i, v, p in pq:iterator() do
                 local item = correct_order[i]
-                assert.are.equals(v, item.d)
-                assert.are.equals(p, item.p)
+                assert.are.equals(item.d, v)
+                assert.are.equals(item.p, p)
             end
         end)
     end)
@@ -308,8 +308,8 @@ describe("priorityqueue module", function()
 
         local function assert_element(index)
             local value, priority = pq:dequeue()
-            assert(priority == list[index].p, "Priority mismatch")
-            assert(value    == list[index].d, "Value mismatch")
+            assert.are.equals(list[index].p, priority, "Priority mismatch")
+            assert.are.equals(list[index].d, value, "Value mismatch")
         end
 
         assert_element(1)
@@ -345,8 +345,8 @@ describe("priorityqueue module", function()
 
         local function assert_element(index)
             local value, priority = pq:dequeue()
-            assert(priority == list[index].p, "Priority mismatch")
-            assert(value    == list[index].d, "Value mismatch")
+            assert.are.equals(list[index].p, priority, "Priority mismatch")
+            assert.are.equals(list[index].d, value, "Value mismatch")
         end
 
         assert_element(2)
@@ -387,6 +387,135 @@ describe("priorityqueue module", function()
             v, p = pq:peek()
             assert.are.equals("obj4", v)
             assert.are.equals(0, p)
+        end)
+    end)
+
+    describe("piterator method", function()
+        it("should throw exception on nil priority argument", function()
+            local pq = priorityqueue()
+            assert.has_error(function() pq:piterator() end)
+            assert.has_error(function() pq:piterator(nil) end)
+        end)
+
+        it("should match a predefined table in ascending order", function()
+            local list = {
+                {p = 1, d = 'T'},
+                {p = 3, d = 'O' },
+                {p = 2, d = 'N' },
+                {p = 2, d = 'I'},
+                {p = 1, d = '<SPACE>'},
+                {p = 1, d = 'M'},
+                {p = 2, d = 'R'},
+                {p = 2, d = 'S'},
+                {p = 1, d = '<EOF>'}
+            }
+
+            local pq = priorityqueue()
+
+            local l1 = {}
+            local l2 = {}
+            local l3 = {}
+
+            for i, node in ipairs(list) do
+                if (node.p == 1) then
+                    table.insert(l1, node)
+                elseif (node.p == 2) then
+                    table.insert(l2, node)
+                elseif (node.p == 3) then
+                    table.insert(l3, node)
+                else
+                    assert.True(false, "Unknown priority")
+                end
+                pq:enqueue(node.d, node.p)
+            end
+
+            local k
+
+            k = 1
+            for j, value, priority in pq:piterator(1) do
+                assert.are.equals(k, j)
+                assert.are.equals(l1[k].d, value)
+                assert.are.equals(l1[k].p, priority)
+                k = k + 1
+            end
+
+            k = 1
+            for j, value, priority in pq:piterator(2) do
+                assert.are.equals(k, j)
+                assert.are.equals(l2[k].d, value)
+                assert.are.equals(l2[k].p, priority)
+                k = k + 1
+            end
+
+            k = 1
+            for j, value, priority in pq:piterator(3) do
+                assert.are.equals(k, j)
+                assert.are.equals(l3[k].d, value)
+                assert.are.equals(l3[k].p, priority)
+                k = k + 1
+            end
+        end)
+
+        it("should match a predefined table in descending order", function()
+            local list = {
+                {p = 1, d = 'T'},
+                {p = 3, d = 'O' },
+                {p = 2, d = 'N' },
+                {p = 2, d = 'I'},
+                {p = 1, d = '<SPACE>'},
+                {p = 1, d = 'M'},
+                {p = 2, d = 'R'},
+                {p = 2, d = 'S'},
+                {p = 1, d = '<EOF>'}
+            }
+
+            local function descending_comparer(a, b)
+                return b - a
+            end
+            local pq = priorityqueue(descending_comparer)
+
+            local l1 = {}
+            local l2 = {}
+            local l3 = {}
+
+            for i, node in ipairs(list) do
+                if (node.p == 1) then
+                    table.insert(l1, node)
+                elseif (node.p == 2) then
+                    table.insert(l2, node)
+                elseif (node.p == 3) then
+                    table.insert(l3, node)
+                else
+                    assert.True(false, "Unknown priority")
+                end
+                pq:enqueue(node.d, node.p)
+            end
+
+            local k
+
+            k = 1
+            for j, value, priority in pq:piterator(1) do
+                assert.are.equals(k, j)
+                assert.are.equals(l1[k].d, value)
+                assert.are.equals(l1[k].p, priority)
+                k = k + 1
+            end
+
+            k = 1
+            for j, value, priority in pq:piterator(2) do
+                assert.are.equals(k, j)
+                assert.are.equals(l2[k].d, value)
+                assert.are.equals(l2[k].p, priority)
+                k = k + 1
+            end
+
+            k = 1
+            for j, value, priority in pq:piterator(3) do
+                assert.are.equals(k, j)
+                assert.are.equals(l3[k].d, value)
+                assert.are.equals(l3[k].p, priority)
+                k = k + 1
+            end
         end)
     end)
 
