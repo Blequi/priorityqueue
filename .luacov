@@ -1,0 +1,14 @@
+return {
+    -- standard luacov configuration keys and values here
+    runreport = true,
+    statsfile = 'luacov.stats.out',
+    reportfile = 'luacov.report.out',
+
+    include = {
+        "priorityqueue.lua"
+    },
+
+    modules = {
+        ["priorityqueue"] = "priorityqueue.lua"
+    }
+}
