@@ -36,6 +36,10 @@ jobs:
 
     env:
       LUAROCKS_VERSION: 3.13.0
+      QUEUE_VERSION: 0.0.2
+      QUEUE_ROCKSPEC_REV: 0
+      BINARYTREE_VERSION: 0.0.3
+      BINARYTREE_ROCKSPEC_REV: 0
 
     steps:
 
@@ -202,11 +206,67 @@ jobs:
           echo "LUA_PATH=./?.lua;$(luarocks path --lr-path);;" >> ${GITHUB_ENV}
           echo "LUA_CPATH=./?.so;$(luarocks path --lr-cpath);;" >> ${GITHUB_ENV}
 
-      - name: Install dependencies (queue)
-        run: luarocks install queue
+      - name: Download queue (Windows)
+        if: runner.os == 'Windows'
+        shell: cmd
+        run: curl -LO "https://github.com/Blequi/queue/releases/download/v%QUEUE_VERSION%/queue-%QUEUE_VERSION%.tar.gz"
 
-      - name: Install dependencies (binarytree)
-        run: luarocks install binarytree
+      - name: Extract queue (Windows)
+        if: runner.os == 'Windows'
+        shell: cmd
+        run: tar -xf "queue-%QUEUE_VERSION%.tar.gz"
+
+      - name: Install queue (Windows)
+        if: runner.os == 'Windows'
+        shell: cmd
+        run: |
+          cd queue-%QUEUE_VERSION%
+          luarocks make "rockspecs\queue-%QUEUE_VERSION%-%QUEUE_ROCKSPEC_REV%.rockspec"
+
+      - name: Download queue (Unix)
+        if: runner.os != 'Windows'
+        run: curl -LO "https://github.com/Blequi/queue/releases/download/v${QUEUE_VERSION}/queue-${QUEUE_VERSION}.tar.gz"
+
+      - name: Extract queue (Unix)
+        if: runner.os != 'Windows'
+        run: tar -xf "queue-${QUEUE_VERSION}.tar.gz"
+
+      - name: Install queue (Unix)
+        if: runner.os != 'Windows'
+        run: |
+          cd queue-${QUEUE_VERSION}
+          luarocks make "rockspecs/queue-${QUEUE_VERSION}-${QUEUE_ROCKSPEC_REV}.rockspec"
+
+      - name: Download binarytree (Windows)
+        if: runner.os == 'Windows'
+        shell: cmd
+        run: curl -LO "https://github.com/Blequi/binarytree/releases/download/v%BINARYTREE_VERSION%/binarytree-%BINARYTREE_VERSION%.tar.gz"
+
+      - name: Extract binarytree (Windows)
+        if: runner.os == 'Windows'
+        shell: cmd
+        run: tar -xf "binarytree-%BINARYTREE_VERSION%.tar.gz"
+
+      - name: Install binarytree (Windows)
+        if: runner.os == 'Windows'
+        shell: cmd
+        run: |
+          cd binarytree-%BINARYTREE_VERSION%
+          luarocks make "rockspecs\binarytree-%BINARYTREE_VERSION%-%BINARYTREE_ROCKSPEC_REV%.rockspec"
+
+      - name: Download binarytree (Unix)
+        if: runner.os != 'Windows'
+        run: curl -LO "https://github.com/Blequi/binarytree/releases/download/v${BINARYTREE_VERSION}/binarytree-${BINARYTREE_VERSION}.tar.gz"
+
+      - name: Extract binarytree (Unix)
+        if: runner.os != 'Windows'
+        run: tar -xf "binarytree-${BINARYTREE_VERSION}.tar.gz"
+
+      - name: Install binarytree (Unix)
+        if: runner.os != 'Windows'
+        run: |
+          cd binarytree-${BINARYTREE_VERSION}
+          luarocks make "rockspecs/binarytree-${BINARYTREE_VERSION}-${BINARYTREE_ROCKSPEC_REV}.rockspec"
 
       - name: Run samples (Windows)
         if: runner.os == 'Windows'
