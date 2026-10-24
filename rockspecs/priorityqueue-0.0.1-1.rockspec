@@ -7,7 +7,8 @@ source = {
 description = {
    homepage = "https://github.com/Blequi/priorityqueue",
    license = "MIT",
-   description = [[
+   summary = "Priority Queue data structure written in pure Lua",
+   detailed = [[
 Priority Queue is a data structure whose elements
 are ordered by priority. Elements sharing the same
 priority are maintained in a queue obeying a
