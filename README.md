@@ -7,7 +7,7 @@
 Priority Queue is a data structure whose elements are ordered by priority. Elements sharing the same priority are maintained in a queue obeying a FIFO behavior (first in, first out).
 
 > [!NOTE]
-> 
+>
 > By default, this module uses an **ascending** order in the priority of elements.
 
 ## Table of Contents
@@ -29,6 +29,7 @@ Priority Queue is a data structure whose elements are ordered by priority. Eleme
     * [piterator](#piterator)
 * [Unit Tests](#unit-tests)
 * [Code Coverage](#code-coverage)
+* [Change Log](#change-log)
 
 ## Installation
 
@@ -463,3 +464,7 @@ luarocks install luacov
     ```
 
 3. Open the report (`luacov.report.out`) on your preferred text editor.
+
+## Change Log
+
+Browse the [change log](./CHANGELOG.md).
